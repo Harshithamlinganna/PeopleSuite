@@ -1,3 +1,4 @@
+#!/bin/bash
 import boto3
 import random
 
@@ -15,7 +16,7 @@ def populate_employee_data():
             'LastName': 'Madhugiri Linganna',
             'StartDate': '2022-01-01',
             'Country': 'US',
-            'DepartmentID': 'IT',
+            'DepartmentID': 'CS',
             'Title': 'Software Engineer',
             'ManagerID': None,
             'ManagerName': None
@@ -26,7 +27,7 @@ def populate_employee_data():
             'LastName': 'Maharshi',
             'StartDate': '2022-02-01',
             'Country': 'CA',
-            'DepartmentID': 'IT',
+            'DepartmentID': 'CS',
             'Title': 'Software development Manager',
             'ManagerID': generate_employee_id(),
             'ManagerName': 'John Doe'
