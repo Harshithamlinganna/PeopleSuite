@@ -13,7 +13,7 @@ def populate_employee_data():
         {
             'DepartmentID': 'Finance',
             'CostCenter': '9876543210',
-            'ParentDepartmentID': None
+            'ParentDepartmentID': 'Business'
         },
         {
             'DepartmentID': 'Sales',

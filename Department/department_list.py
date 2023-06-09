@@ -1,37 +1,46 @@
 from flask import Blueprint, jsonify, request
+from boto3.dynamodb.conditions import Key
 import boto3
 
 department_list = Blueprint("department_list", __name__)
 
-db_client = boto3.resource('dynamodb')
+db_client = boto3.resource('dynamodb', region_name='us-west-1')
 
 
 @department_list.route('/peoplesuite/apis/departments', methods=['GET'])
 def get_departments():
     try:
-        response = db_client.scan(TableName='Department')
+        department_table = db_client.Table('Department')
+        response = department_table.scan( )
+        print("responses---", response)
         departments = response['Items']
+        print("departments", type(departments))
         return jsonify(departments), 200
     except Exception as e:
-        return 'Failed to fetch departments', 500
+        return 'Failed to fetch departments', e, 500
     
-@department_list.route('/peoplesuite/apis/departments/<department_id>/employees', methods=['GET'])
-def get_department_employees(department_id):
-    print("inside", department_id)
+@department_list.route('/peoplesuite/apis/departments/<departmentId>/employees', methods=['GET'])
+def get_department_employees(departmentId):
     try:
-        response = db_client.query(
-                TableName="Employee",
-                KeyConditionExpression='DepartmentID = :department_id',
-            ExpressionAttributeValues={
-                ':department_id': {'S': DepartmentID}
-            }
+        employee_table = db_client.Table('Employee')
+        # Query the Employee table based on departmentId
+        response = employee_table.scan(
+            FilterExpression=Key('DepartmentID').eq(departmentId)
         )
+        employees = response['Items']
+        # Extract relevant employee information (Employee ID, Employee Name, Employee Profile URL)
+        employee_data = [
+        {
+            'EmployeeID': employee['EmployeeID'],
+            'EmployeeName': f"{employee['FirstName']} {employee['LastName']}",
+            'ProfileURL': f"/peoplesuite/apis/employees/{employee['EmployeeID']}/profile",
+        }
+             for employee in employees
+        ]
 
-        print("response,---------", response)
-        department = response['Item']
-        
-        
-        return jsonify(department), 200
+
+        return jsonify(employee_data), 200
     except Exception as e:
         return 'Failed to fetch department employees', 500
+
 
